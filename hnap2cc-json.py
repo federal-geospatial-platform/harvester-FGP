@@ -342,33 +342,62 @@ def main():
             org_strings = []
             org_string = ''
             attempt = ''
-            value = fetch_FGP_value(
-                record, HNAP_fileIdentifier, schema_ref["16a"])
-            if not value or len(value) < 1:
-                attempt += "No english value"
-            else:
-                attempt += "Is english value ["+str(len(value))+"]"
-                for single_value in value:
-                    if re.search("^Government of Canada;", single_value):
-                        org_strings.append(single_value)
-                    else:
-                        attempt += " but no GoC prefix ["+single_value+"]"
 
-            value = fetch_FGP_value(
-                record, HNAP_fileIdentifier, schema_ref["16b"])
-            if not value or len(value) < 1:
-                attempt += ", no french value"
+            if HNAP_primary_lang == 'en':
+
+                value = fetch_FGP_value(
+                    record, HNAP_fileIdentifier, schema_ref["16a"])
+                if not value or len(value) < 1:
+                    attempt += "No english value"
+                else:
+                    attempt += "Is english value ["+str(len(value))+"]"
+                    for single_value in value:
+                        if re.search("^Government of Canada;", single_value):
+                            org_strings.append(single_value)
+                        else:
+                            attempt += " but no GoC prefix ["+single_value+"]"
+
+                value = fetch_FGP_value(
+                    record, HNAP_fileIdentifier, schema_ref["16b"])
+                if not value or len(value) < 1:
+                    attempt += ", no french value"
+                else:
+                    attempt += ", french ["+str(len(value))+"]"
+                    for single_value in value:
+                        if re.search("^Government du Canada;", single_value):
+                            org_strings.append(single_value)
+                        else:
+                            attempt += " but no GdC ["+single_value+"]"
+
             else:
-                attempt += ", french ["+str(len(value))+"]"
-                for single_value in value:
-                    if re.search("^Government du Canada;", single_value):
-                        org_strings.append(single_value)
-                    else:
-                        attempt += " but no GdC ["+single_value+"]"
+
+                value = fetch_FGP_value(
+                    record, HNAP_fileIdentifier, schema_ref["16b"])
+                if not value or len(value) < 1:
+                    attempt += "No english value"
+                else:
+                    attempt += "Is english value ["+str(len(value))+"]"
+                    for single_value in value:
+                        if re.search("^Government of Canada;", single_value):
+                            org_strings.append(single_value)
+                        else:
+                            attempt += " but no GoC prefix ["+single_value+"]"
+
+                value = fetch_FGP_value(
+                    record, HNAP_fileIdentifier, schema_ref["16a"])
+                if not value or len(value) < 1:
+                    attempt += ", no french value"
+                else:
+                    attempt += ", french ["+str(len(value))+"]"
+                    for single_value in value:
+                        if re.search("^Government du Canada;", single_value):
+                            org_strings.append(single_value)
+                        else:
+                            attempt += " but no GdC ["+single_value+"]"
 
             if len(org_strings) < 1:
                 reportError(
-                    HNAP_fileIdentifier,[
+                    HNAP_fileIdentifier, [
                         schema_ref["16"]['CKAN API property'],
                         "Bad organizationName, no Government of Canada",
                         attempt
@@ -1354,6 +1383,7 @@ def main():
 # CC::OpenMaps-67 Title (English)
 
                 value = fetch_FGP_value(resource, HNAP_fileIdentifier, schema_ref["67"])
+
                 if value:
                     json_record_resource[schema_ref["66"]['CKAN API property']][CKAN_secondary_lang] = value
 
@@ -1361,7 +1391,15 @@ def main():
 # CC::OpenMaps-70 Format
 # CC::OpenMaps-73 Language
 
-                value = fetch_FGP_value(resource, HNAP_fileIdentifier, schema_ref["69-70-73"])
+                if HNAP_primary_lang == 'en':
+                    value = fetch_FGP_value(resource, HNAP_fileIdentifier, schema_ref["69-70-73"])
+                else:
+                    # HACK - for french primary records we need to compare with english (alternate) value if it exists
+                    value_alternate = fetchXMLValues(resource, 'gmd:description/gmd:PT_FreeText/gmd:textGroup/gmd:LocalisedCharacterString')[0]
+
+                    if value_alternate:
+                        value = value_alternate
+
                 if value:
                     description_text = value.strip()
 
@@ -1394,7 +1432,9 @@ def main():
                         json_record_resource[schema_ref["70"]['CKAN API property']] = res_format.strip()
                         json_record_resource[schema_ref["73"]['CKAN API property']] = language_str
 
-                        #XXX Super duper hack
+                        # HACK Super duper hack
+                        # if json_record_resource[schema_ref["69"]['CKAN API property']].lower() == 'document de soutien':
+                        #     json_record_resource[schema_ref["69"]['CKAN API property']] = 'guide'
                         if json_record_resource[schema_ref["69"]['CKAN API property']] == 'supporting document':
                             json_record_resource[schema_ref["69"]['CKAN API property']] = 'guide'
                         if json_record_resource[schema_ref["69"]['CKAN API property']] == 'Supporting Documents':
