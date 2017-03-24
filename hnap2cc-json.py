@@ -411,7 +411,7 @@ def main():
 
                 if len(valid_orgs) < 1:
                     reportError(
-                        HNAP_fileIdentifier,[
+                        HNAP_fileIdentifier, [
                             schema_ref["16"]['CKAN API property'],
                             "No valid orgs found",
                             org_string.strip()
@@ -495,7 +495,7 @@ def main():
                     termsValue = fetchCLValue(single_value, napCI_RoleCode)
                     if not termsValue:
                         reportError(
-                            HNAP_fileIdentifier,[
+                            HNAP_fileIdentifier, [
                                 schema_ref["26"]['CKAN API property'],
                                 'Value not found in '+schema_ref["26"]['Reference']
                             ])
@@ -515,40 +515,60 @@ def main():
             primary_vals = {}
             primary_vals[CKAN_primary_lang] = {}
 
+            # HACK - find out of there is a pointOfContact role provided
+            ref = schema_ref["29a"]["FGP XPATH"].split("gmd:CI_ResponsibleParty")[0] + "gmd:CI_ResponsibleParty[gmd:role/gmd:CI_RoleCode[@codeListValue='RI_414']]"
+            tmp = fetchXMLValues(record, ref)
+            xpath_sub = ""
+
+            if len(tmp) > 0:
+                xpath_sub = "gmd:CI_ResponsibleParty[gmd:role/gmd:CI_RoleCode[@codeListValue='RI_414']]"
+
             # deliveryPoint
-            value = fetch_FGP_value(record, HNAP_fileIdentifier, schema_ref["29a"])
+            # value = fetch_FGP_value(record, HNAP_fileIdentifier, schema_ref["29a"])
+            value = fetch_FGP_value(record, HNAP_fileIdentifier, {"Requirement": schema_ref["29a"]['Requirement'], "Occurrences": schema_ref["29a"]['Occurrences'],"FGP XPATH": schema_ref["29a"]["FGP XPATH"].replace("gmd:CI_ResponsibleParty", xpath_sub), "Value Type": schema_ref["29a"]['Value Type'], "CKAN API property": schema_ref["29a"]['CKAN API property']})
+
             if value:
                 for single_value in value:
                     primary_vals[CKAN_primary_lang]['delivery_point'] = single_value
             # city
-            value = fetch_FGP_value(record, HNAP_fileIdentifier, schema_ref["29b"])
+            # value = fetch_FGP_value(record, HNAP_fileIdentifier, schema_ref["29b"])
+            value = fetch_FGP_value(record, HNAP_fileIdentifier, {"Requirement": schema_ref["29b"]['Requirement'], "Occurrences": schema_ref["29b"]['Occurrences'],"FGP XPATH": schema_ref["29b"]["FGP XPATH"].replace("gmd:CI_ResponsibleParty", xpath_sub), "Value Type": schema_ref["29b"]['Value Type'], "CKAN API property": schema_ref["29b"]['CKAN API property']})
+
             if value:
                 for single_value in value:
                     primary_vals[CKAN_primary_lang]['city'] = single_value
             # administrativeArea
-            value = fetch_FGP_value(record, HNAP_fileIdentifier, schema_ref["29c"])
+            # value = fetch_FGP_value(record, HNAP_fileIdentifier, schema_ref["29c"])
+            value = fetch_FGP_value(record, HNAP_fileIdentifier, {"Requirement": schema_ref["29c"]['Requirement'], "Occurrences": schema_ref["29c"]['Occurrences'],"FGP XPATH": schema_ref["29c"]["FGP XPATH"].replace("gmd:CI_ResponsibleParty", xpath_sub), "Value Type": schema_ref["29c"]['Value Type'], "CKAN API property": schema_ref["29c"]['CKAN API property']})
+
             if value:
                 for single_value in value:
                     primary_vals[CKAN_primary_lang]['administrative_area'] = single_value
             # postalCode
-            value = fetch_FGP_value(record, HNAP_fileIdentifier, schema_ref["29d"])
+            # value = fetch_FGP_value(record, HNAP_fileIdentifier, schema_ref["29d"])
+            value = fetch_FGP_value(record, HNAP_fileIdentifier, {"Requirement": schema_ref["29d"]['Requirement'], "Occurrences": schema_ref["29d"]['Occurrences'],"FGP XPATH": schema_ref["29d"]["FGP XPATH"].replace("gmd:CI_ResponsibleParty", xpath_sub), "Value Type": schema_ref["29d"]['Value Type'], "CKAN API property": schema_ref["29d"]['CKAN API property']})
+
             if value:
                 for single_value in value:
                     primary_vals[CKAN_primary_lang]['postal_code'] = single_value
             # country
-            value = fetch_FGP_value(record, HNAP_fileIdentifier, schema_ref["29e"])
+            # value = fetch_FGP_value(record, HNAP_fileIdentifier, schema_ref["29e"])
+            value = fetch_FGP_value(record, HNAP_fileIdentifier, {"Requirement": schema_ref["29e"]['Requirement'], "Occurrences": schema_ref["29e"]['Occurrences'],"FGP XPATH": schema_ref["29e"]["FGP XPATH"].replace("gmd:CI_ResponsibleParty", xpath_sub), "Value Type": schema_ref["29e"]['Value Type'], "CKAN API property": schema_ref["29e"]['CKAN API property']})
+
             if value:
                 for single_value in value:
                     primary_vals[CKAN_primary_lang]['country'] = single_value
             # electronicMailAddress
-            value = fetch_FGP_value(record, HNAP_fileIdentifier, schema_ref["29f"])
+            # value = fetch_FGP_value(record, HNAP_fileIdentifier, schema_ref["29f"])
+            value = fetch_FGP_value(record, HNAP_fileIdentifier, {"Requirement": schema_ref["29f"]['Requirement'], "Occurrences": schema_ref["29f"]['Occurrences'],"FGP XPATH": schema_ref["29f"]["FGP XPATH"].replace("gmd:CI_ResponsibleParty", xpath_sub), "Value Type": schema_ref["29f"]['Value Type'], "CKAN API property": schema_ref["29f"]['CKAN API property']})
+
             if value:
                 for single_value in value:
                     primary_vals[CKAN_primary_lang]['electronic_mail_address'] = single_value
 
             if len(primary_vals[CKAN_primary_lang]) < 1:
                 reportError(
-                    HNAP_fileIdentifier,[
+                    HNAP_fileIdentifier, [
                         schema_ref["29"]['CKAN API property'],
                         'Value not found in '+schema_ref["29"]['Reference']
                     ])
@@ -558,32 +578,44 @@ def main():
             primary_vals[CKAN_secondary_lang] = {}
 
             # deliveryPoint
-            value = fetch_FGP_value(record, HNAP_fileIdentifier, schema_ref["30a"])
+            # value = fetch_FGP_value(record, HNAP_fileIdentifier, schema_ref["30a"])
+            value = fetch_FGP_value(record, HNAP_fileIdentifier, {"Requirement": schema_ref["30a"]['Requirement'], "Occurrences": schema_ref["30a"]['Occurrences'],"FGP XPATH": schema_ref["30a"]["FGP XPATH"].replace("gmd:CI_ResponsibleParty", xpath_sub), "Value Type": schema_ref["30a"]['Value Type'], "CKAN API property": schema_ref["30a"]['CKAN API property']})
+
             if value:
                 for single_value in value:
                     primary_vals[CKAN_secondary_lang]['delivery_point'] = single_value
             # city
-            value = fetch_FGP_value(record, HNAP_fileIdentifier, schema_ref["30b"])
+            # value = fetch_FGP_value(record, HNAP_fileIdentifier, schema_ref["30b"])
+            value = fetch_FGP_value(record, HNAP_fileIdentifier, {"Requirement": schema_ref["30b"]['Requirement'], "Occurrences": schema_ref["30b"]['Occurrences'],"FGP XPATH": schema_ref["30b"]["FGP XPATH"].replace("gmd:CI_ResponsibleParty", xpath_sub), "Value Type": schema_ref["30b"]['Value Type'], "CKAN API property": schema_ref["30b"]['CKAN API property']})
+
             if value:
                 for single_value in value:
                     primary_vals[CKAN_secondary_lang]['city'] = single_value
             # administrativeArea
-            value = fetch_FGP_value(record, HNAP_fileIdentifier, schema_ref["30c"])
+            # value = fetch_FGP_value(record, HNAP_fileIdentifier, schema_ref["30c"])
+            value = fetch_FGP_value(record, HNAP_fileIdentifier, {"Requirement": schema_ref["30c"]['Requirement'], "Occurrences": schema_ref["30c"]['Occurrences'],"FGP XPATH": schema_ref["30c"]["FGP XPATH"].replace("gmd:CI_ResponsibleParty", xpath_sub), "Value Type": schema_ref["30c"]['Value Type'], "CKAN API property": schema_ref["30c"]['CKAN API property']})
+
             if value:
                 for single_value in value:
                     primary_vals[CKAN_secondary_lang]['administrative_area'] = single_value
             # postalCode
-            value = fetch_FGP_value(record, HNAP_fileIdentifier, schema_ref["30d"])
+            # value = fetch_FGP_value(record, HNAP_fileIdentifier, schema_ref["30d"])
+            value = fetch_FGP_value(record, HNAP_fileIdentifier, {"Requirement": schema_ref["30d"]['Requirement'], "Occurrences": schema_ref["30d"]['Occurrences'],"FGP XPATH": schema_ref["30d"]["FGP XPATH"].replace("gmd:CI_ResponsibleParty", xpath_sub), "Value Type": schema_ref["30d"]['Value Type'], "CKAN API property": schema_ref["30d"]['CKAN API property']})
+
             if value:
                 for single_value in value:
                     primary_vals[CKAN_secondary_lang]['postal_code'] = single_value
             # country
-            value = fetch_FGP_value(record, HNAP_fileIdentifier, schema_ref["30e"])
+            # value = fetch_FGP_value(record, HNAP_fileIdentifier, schema_ref["30e"])
+            value = fetch_FGP_value(record, HNAP_fileIdentifier, {"Requirement": schema_ref["30e"]['Requirement'], "Occurrences": schema_ref["30e"]['Occurrences'],"FGP XPATH": schema_ref["30e"]["FGP XPATH"].replace("gmd:CI_ResponsibleParty", xpath_sub), "Value Type": schema_ref["30e"]['Value Type'], "CKAN API property": schema_ref["30e"]['CKAN API property']})
+
             if value:
                 for single_value in value:
                     primary_vals[CKAN_secondary_lang]['country'] = single_value
             # electronicMailAddress
-            value = fetch_FGP_value(record, HNAP_fileIdentifier, schema_ref["30f"])
+            # value = fetch_FGP_value(record, HNAP_fileIdentifier, schema_ref["30f"])
+            value = fetch_FGP_value(record, HNAP_fileIdentifier, {"Requirement": schema_ref["30f"]['Requirement'], "Occurrences": schema_ref["30f"]['Occurrences'],"FGP XPATH": schema_ref["30f"]["FGP XPATH"].replace("gmd:CI_ResponsibleParty", xpath_sub), "Value Type": schema_ref["30f"]['Value Type'], "CKAN API property": schema_ref["30f"]['CKAN API property']})
+            
             if value:
                 for single_value in value:
                     primary_vals[CKAN_secondary_lang]['electronic_mail_address'] = single_value
@@ -602,14 +634,27 @@ def main():
             # Single report out, multiple records combined
             schema_ref["31"]['Occurrences'] = 'R'
             json_record[schema_ref["31"]['CKAN API property']] = {}
-            value = fetch_FGP_value(record, HNAP_fileIdentifier, schema_ref["31"])
-            primary_data = []
-            if value:
-                for single_value in value:
-                    primary_data.append(single_value)
 
-            if len(primary_data) > 0:
-                json_record[schema_ref["31"]['CKAN API property']] = ','.join(value)
+            # HACK - find out of there is a pointOfContact role provided
+            ref = schema_ref["31"]["FGP XPATH"].split("gmd:CI_ResponsibleParty")[0] + "gmd:CI_ResponsibleParty[gmd:role/gmd:CI_RoleCode[@codeListValue='RI_414']]"
+            tmp = fetchXMLValues(record, ref)
+            xpath_sub = ""
+
+            if len(tmp) > 0:
+                xpath_sub = "gmd:CI_ResponsibleParty[gmd:role/gmd:CI_RoleCode[@codeListValue='RI_414']]"
+
+            # value = fetch_FGP_value(record, HNAP_fileIdentifier, schema_ref["31"])
+            value = fetch_FGP_value(record, HNAP_fileIdentifier, {"Requirement": schema_ref["31"]['Requirement'], "Occurrences": schema_ref["31"]['Occurrences'],"FGP XPATH": schema_ref["31"]["FGP XPATH"].replace("gmd:CI_ResponsibleParty", xpath_sub), "Value Type": schema_ref["31"]['Value Type'], "CKAN API property": schema_ref["31"]['CKAN API property']})
+
+            # primary_data = []
+            # if value:
+            #     for single_value in value:
+            #         primary_data.append(single_value)
+
+            # if len(primary_data) > 0:
+            #     json_record[schema_ref["31"]['CKAN API property']] = ','.join(value)
+
+            json_record[schema_ref["31"]['CKAN API property']] = value[0]
 
 # CC::OpenMaps-32 Description (English)
 
