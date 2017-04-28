@@ -1393,6 +1393,7 @@ def main():
 
             resource_no = 0
             for resource in record_resources:
+
                 resource_no += 1
 
                 json_record_resource = {}
@@ -1446,7 +1447,7 @@ def main():
                         json_record_resource[schema_ref["69"]['CKAN API property']] = res_contentType.strip().lower()
                         json_record_resource[schema_ref["70"]['CKAN API property']] = res_format.strip()
                         json_record_resource[schema_ref["73"]['CKAN API property']] = language_str
- 
+
                         #XXX Super duper hack
                         if json_record_resource[schema_ref["69"]['CKAN API property']] == 'document de soutien':
                             json_record_resource[schema_ref["69"]['CKAN API property']] = 'guide'
@@ -1458,7 +1459,7 @@ def main():
                             json_record_resource[schema_ref["69"]['CKAN API property']] = 'guide'
                         if json_record_resource[schema_ref["69"]['CKAN API property']] == 'web service':
                             json_record_resource[schema_ref["69"]['CKAN API property']] = 'web_service'
-                        if json_record_resource[schema_ref["69"]['CKAN API property']] == 'données':
+                        if json_record_resource[schema_ref["69"]['CKAN API property']] == u'données':
                             json_record_resource[schema_ref["69"]['CKAN API property']] = 'dataset'
 
                         if json_record_resource[schema_ref["70"]['CKAN API property']] == 'Web App':
@@ -1565,6 +1566,9 @@ def main():
 
                 # Append the resource to the Open Maps record
                 json_record['resources'].append(json_record_resource)
+            
+            # TODO Add parent relation if exists
+            # json_record['resources'].append( { "relation_type" : "info" } )
 
             #json_record[schema_ref["81"]['CKAN API property']] = can_be_used_in_RAMP
             view_on_map = ""
@@ -2778,6 +2782,7 @@ CL_Formats = [
     'CDR',
     'COD',
     'CSV',
+    'DBD',
     'DBF',
     'DICOM',
     'DNG',
@@ -2798,8 +2803,12 @@ CL_Formats = [
     'GeoPDF',
     'GeoRSS',
     'GeoTIF',
+    'GEOJSON',
+    'GPKG',
     'GIF',
     'GML',
+    'GRIB1',
+    'GRIB2',
     'HDF',
     'HTML',
     'IATI',
@@ -2811,15 +2820,20 @@ CL_Formats = [
     'JSONL',
     'KML',
     'KMZ',
+    'LAS',
+    'LYR',
     'MFX',
     'MOV',
     'MPEG',
     'MPEG-1',
     'MP3',
+    'MXD',
     'NetCDF',
+    'NT',
     'ODP',
     'ODS',
     'ODT',
+    'other',
     'PDF',
     'PDF/A-1',
     'PDF/A-2',
@@ -2834,9 +2848,17 @@ CL_Formats = [
     'SEGY',
     'SHP',
     'SQL',
+    'SQLITE3',
+    'SQLITE',
     'SVG',
+    'TAB',
+    'TFW',
     'TIFF',
+    'TRIG',
+    'TRIX',
+    'TTL',
     'TXT',
+    'VPF',
     'WAV',
     'WFS',
     'WMS',
