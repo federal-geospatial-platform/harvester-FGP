@@ -654,7 +654,18 @@ def main():
             # if len(primary_data) > 0:
             #     json_record[schema_ref["31"]['CKAN API property']] = ','.join(value)
 
-            json_record[schema_ref["31"]['CKAN API property']] = value[0]
+            # Check for valid email
+            isValidEmail = re.match(r'(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)', value[0])
+
+            if isValidEmail == None:
+                reportError(
+                    HNAP_fileIdentifier, [
+                        schema_ref["31"]['CKAN API property'],
+                        "Invalid Email",
+                        value[0]
+                    ])
+            else:
+                json_record[schema_ref["31"]['CKAN API property']] = value[0]
 
 # CC::OpenMaps-32 Description (English)
 
@@ -1208,11 +1219,19 @@ def main():
             value = fetch_FGP_value(record, HNAP_fileIdentifier, schema_ref["61"])
             # Not mandatory, process if you have it
             if value and len(value) > 0:
-                for aggregateDataSetIdentifier in value:
-                    (primary, secondary) =\
-                        aggregateDataSetIdentifier.strip().split(';')
-                    aggregateDataSetIdentifier_array.append(primary.strip())
-                    aggregateDataSetIdentifier_array.append(secondary.strip())
+
+                try:
+                    for aggregateDataSetIdentifier in value:
+                        (primary, secondary) =\
+                            aggregateDataSetIdentifier.strip().split(';')
+                        aggregateDataSetIdentifier_array.append(primary.strip())
+                        aggregateDataSetIdentifier_array.append(secondary.strip())
+                except ValueError:
+                    errorInfo = [schema_ref["61"]['CKAN API property']]
+                    errorInfo.append('primary/secondary identifiers not provided/valid')
+                    errorInfo.append(aggregateDataSetIdentifier.strip())
+                    reportError(HNAP_fileIdentifier, errorInfo)
+                    pass
 
             json_record[schema_ref["61"]['CKAN API property']] = ','.join(
                 aggregateDataSetIdentifier_array)
