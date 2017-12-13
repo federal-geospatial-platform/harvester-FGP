@@ -700,12 +700,15 @@ def main():
                     p = re.compile('^[A-Z][A-Z] [^>]+ > ')
                     single_value = p.sub('', single_value)
                     single_value = single_value.strip()
+                    
 # ADAPTATION #4
 # 2016-05-27 - call
 # Alexandre Bolieux asked I replace commas with something valid.  I'm replacing them with semi-colons
 # which can act as a seperator character like the comma but get past that reserved character
                     single_value = single_value.replace(',', ';')
 # END ADAPTATION
+                    # remove multiple spaces
+                    single_value = re.sub(r'\s+', ' ', single_value)
                     keyword_error = canada_tags(single_value).replace('"', '""')
 
 # ADAPTATION #5
@@ -753,6 +756,7 @@ def main():
 # the comma but get past that reserved character
                     single_value = single_value.replace(',', ';')
 # END ADAPTATION
+                    single_value = re.sub(r'\s+', ' ', single_value)
                     keyword_error = canada_tags(single_value).replace('"', '""')
 
 # ADAPTATION #5
@@ -813,7 +817,7 @@ def main():
                         topicCategory.strip(), napMD_KeywordTypeCode)
                     if termsValue:
                         topicCategory_values.append(termsValue[0])
-
+                
                 if len(topicCategory_values) < 1:
                     reportError(
                         HNAP_fileIdentifier,[
@@ -822,7 +826,6 @@ def main():
                         ])
                 else:
                     json_record[schema_ref["37"]['CKAN API property']] = topicCategory_values
-
 
 # CC::OpenMaps-38 Audience
 # TBS 2016-04-13: Not in HNAP, we can skip
@@ -932,7 +935,8 @@ def main():
                 schema_ref["46"]["FGP XPATH"],
                 namespaces={
                     'gmd': 'http://www.isotc211.org/2005/gmd',
-                    'gco': 'http://www.isotc211.org/2005/gco'})
+                    'gco': 'http://www.isotc211.org/2005/gco'})      
+                     
             if(len(r)):
                 for cn in r:
                     input_types = {}
@@ -988,7 +992,7 @@ def main():
             if 'date_published' not in json_record:
                 reportError(
                     HNAP_fileIdentifier,[
-                        schema_ref["37"]['CKAN API property'],
+                        schema_ref["46"]['CKAN API property'],
                         'mandatory field missing'
                     ])
 
@@ -1020,6 +1024,10 @@ def main():
             possible_refrences = fetchXMLArray(
                 record,
                 schema_ref["56"]['FGP XPATH'])
+
+            # print '--------------------------------------'
+            # print possible_refrences
+            # print '--------------------------------------'
 
             if len(possible_refrences) == 0:
                 reportError(
@@ -1491,6 +1499,10 @@ def main():
                             json_record_resource[schema_ref["70"]['CKAN API property']] = 'EXE'
                         if json_record_resource[schema_ref["70"]['CKAN API property']] == 'Android Application':
                             json_record_resource[schema_ref["70"]['CKAN API property']] = 'APK'
+                        if json_record_resource[schema_ref["70"]['CKAN API property']] == 'GeoJSON':
+                            json_record_resource[schema_ref["70"]['CKAN API property']] = 'GEOJSON'
+                        if json_record_resource[schema_ref["70"]['CKAN API property']] == 'dxf':
+                            json_record_resource[schema_ref["70"]['CKAN API property']] = 'DXF'
 
                 else:
                     reportError(
@@ -1864,6 +1876,7 @@ def canada_tags(value):
     - spaces at beginning and end
     """
     value = value.strip()
+
     if len(value) < MIN_TAG_LENGTH:
         return  u'Tag "%s" length is less than minimum %s' % (value, MIN_TAG_LENGTH)
     if len(value) > MAX_TAG_LENGTH:
