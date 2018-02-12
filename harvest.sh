@@ -71,13 +71,13 @@ else
     # ckanapi load datasets -I ~/_harvester_OpenMaps/harvested_records.jl -c production.ini
 
     # STAGING
-    # ckanapi load datasets -I harvested_records.jl -r http://staging.open.canada.ca/data -a CKAN_API_KEY && date +"%Y-%m-%dT%H:%M:%SZ" > run.last
+    # ckanapi load datasets -I harvested_records.jl -r https://staging.open.canada.ca/data -a CKAN_API_KEY && date +"%Y-%m-%dT%H:%M:%SZ" > run.last
 
     # PRODUCTION
-    # ckanapi load datasets -I harvested_records.jl -r http://open.canada.ca/data -a CKAN_API_KEY && date +"%Y-%m-%dT%H:%M:%SZ" > run.last
+    # ckanapi load datasets -I harvested_records.jl -r https://open.canada.ca/data -a CKAN_API_KEY && date +"%Y-%m-%dT%H:%M:%SZ" > run.last
 
     # LOCAL TESTING
-    # to test: ckanapi load datasets -I test_upload.jl -r http://staging.open.canada.ca/data -a CKAN_API_KEY
+    # to test: ckanapi load datasets -I test_upload.jl -r https://staging.open.canada.ca/data -a CKAN_API_KEY
 fi
 
 rm run.lock
