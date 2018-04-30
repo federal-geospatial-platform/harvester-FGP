@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""Usage: harvest.py [-f from_iso_date_time]
+"""Usage: harvest.py [-f from_iso_date_time (e.g. 1970-01-01T00:00:00Z)]
 
 Extract HNAP XML from FGP platform
 

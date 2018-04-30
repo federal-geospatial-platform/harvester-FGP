@@ -1594,6 +1594,11 @@ def main():
                         protocol_desc = value.strip()
                         if protocol_desc in mappable_protocols:
                             can_be_used_in_RAMP = True
+                            
+                            # check to see if the URL is HTTPS
+                            value = fetch_FGP_value(resource, HNAP_fileIdentifier, schema_ref["74"])
+                            if value:
+                                can_be_used_in_RAMP = value[:value.find(":")] == 'https'
 
                 # Append the resource to the Open Maps record
                 json_record['resources'].append(json_record_resource)
