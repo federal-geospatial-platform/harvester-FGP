@@ -23,6 +23,9 @@ import json
 # Date validation
 import datetime
 
+import urllib2
+from urlparse import urlparse
+
 import sys
 from io import StringIO, BytesIO
 import time
@@ -655,17 +658,26 @@ def main():
             #     json_record[schema_ref["31"]['CKAN API property']] = ','.join(value)
 
             # Check for valid email
-            isValidEmail = re.match(r'(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)', value[0])
+            if value:
+                isValidEmail = re.match(r'(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)', value[0])
 
-            if isValidEmail == None:
+                if not isValidEmail or isValidEmail == None:
+                    reportError(
+                        HNAP_fileIdentifier, [
+                            schema_ref["31"]['CKAN API property'],
+                            "Invalid Email",
+                            value[0]
+                        ])
+                else:
+                    json_record[schema_ref["31"]['CKAN API property']] = value[0]
+            else:
                 reportError(
                     HNAP_fileIdentifier, [
                         schema_ref["31"]['CKAN API property'],
                         "Invalid Email",
-                        value[0]
+                        ''
                     ])
-            else:
-                json_record[schema_ref["31"]['CKAN API property']] = value[0]
+
 
 # CC::OpenMaps-32 Description (English)
 
@@ -945,12 +957,15 @@ def main():
                     # Decypher which side has the code and which has the data,
                     # yea... it changes -sigh-
                     # Keys will always use the ;
-                    if cn[0][0].text is not None and len(cn[0][0].text.split(';')) > 1:
-                        inKey = cn[0][0].text.split(';')
-                        inVal = cn[1][0].text.strip()
-                    elif cn[1][0].text is not None:
-                        inKey = cn[1][0].text.split(';')
-                        inVal = cn[0][0].text.strip()
+                    try:
+                        if cn[0][0].text is not None and len(cn[0][0].text.split(';')) > 1:
+                            inKey = cn[0][0].text.split(';')
+                            inVal = cn[1][0].text.strip()
+                        elif cn[1][0].text is not None:
+                            inKey = cn[1][0].text.split(';')
+                            inVal = cn[0][0].text.strip()
+                    except:
+                        pass
 
                     for input_type in inKey:
                         input_type = input_type.strip()
@@ -2084,47 +2099,49 @@ napMD_KeywordTypeCode = {
 }
 
 GC_Registry_of_Applied_Terms = {
-    'Aboriginal Affairs and Northern Development Canada'      : [u'Aboriginal Affairs and Northern Development Canada',u'AANDC',u'Affaires autochtones et Développement du Nord Canada',u'AADNC',u'249'],
-    'Affaires autochtones et Développement du Nord Canada'    : [u'Aboriginal Affairs and Northern Development Canada',u'AANDC',u'Affaires autochtones et Développement du Nord Canada',u'AADNC',u'249'],
-    'Affaires autochtones et du Nord Canada'                  : [u'Aboriginal Affairs and Northern Development Canada',u'AANDC',u'Affaires autochtones et Développement du Nord Canada',u'AADNC',u'249'],
-    'Indigenous and Northern Affairs Canada'                  : [u'Aboriginal Affairs and Northern Development Canada',u'AANDC',u'Affaires autochtones et Développement du Nord Canada',u'AADNC',u'249'],
-    # 'Affaires autochtones et du Nord Canada'                : [u'Indigenous and Northern Affairs Canada',u'INAC',u'Affaires autochtones et du Nord Canada',u'AANC',u'249'],
-    # 'Indigenous and Northern Affairs Canada'                : [u'Indigenous and Northern Affairs Canada',u'INAC',u'Affaires autochtones et du Nord Canada',u'AANC',u'249'],
+    'Aboriginal Affairs and Northern Development Canada'        : [u'Aboriginal Affairs and Northern Development Canada',u'AANDC',u'Affaires autochtones et Développement du Nord Canada',u'AADNC',u'249'],
+    'Affaires autochtones et Développement du Nord Canada'      : [u'Aboriginal Affairs and Northern Development Canada',u'AANDC',u'Affaires autochtones et Développement du Nord Canada',u'AADNC',u'249'],
+    'Affaires autochtones et du Nord Canada'                    : [u'Aboriginal Affairs and Northern Development Canada',u'AANDC',u'Affaires autochtones et Développement du Nord Canada',u'AADNC',u'249'],
+    'Indigenous and Northern Affairs Canada'                    : [u'Aboriginal Affairs and Northern Development Canada',u'AANDC',u'Affaires autochtones et Développement du Nord Canada',u'AADNC',u'249'],
+    # 'Affaires autochtones et du Nord Canada'                  : [u'Indigenous and Northern Affairs Canada',u'INAC',u'Affaires autochtones et du Nord Canada',u'AANC',u'249'],
+    # 'Indigenous and Northern Affairs Canada'                  : [u'Indigenous and Northern Affairs Canada',u'INAC',u'Affaires autochtones et du Nord Canada',u'AANC',u'249'],
+    'Crown-Indigenous Relations and Northern Affairs Canada'    : [u'Crown-Indigenous Relations and Northern Affairs Canada',u'AANDC',u'Relations Couronne-Autochtones et Affaires du Nord Canada',u'AADNC',u'249'],
+    'Relations Couronne-Autochtones et Affaires du Nord Canada' : [u'Crown-Indigenous Relations and Northern Affairs Canada',u'AANDC',u'Relations Couronne-Autochtones et Affaires du Nord Canada',u'AADNC',u'249'],
 
-    'Environment Canada'                                      : [u'Environment Canada',u'EC',u'Environnement Canada',u'EC',u'99'],
-    'Environnement Canada'                                    : [u'Environment Canada',u'EC',u'Environnement Canada',u'EC',u'99'],
-    'Environment and Climate Change Canada'                   : [u'Environment Canada',u'EC',u'Environnement Canada',u'EC',u'99'],
-    'Environnement et Changement climatique Canada'           : [u'Environment Canada',u'EC',u'Environnement Canada',u'EC',u'99'],
-    # 'Environment and Climate Change Canada'                 : [u'Environment and Climate Change Canada',u'ECCC',u'Environnement et Changement climatique Canada',u'ECCC',u'99'],
-    # 'Environnement et Changement climatique Canada'         : [u'Environment and Climate Change Canada',u'ECCC',u'Environnement et Changement climatique Canada',u'ECCC',u'99'],
+    'Environment Canada'                                        : [u'Environment Canada',u'EC',u'Environnement Canada',u'EC',u'99'],
+    'Environnement Canada'                                      : [u'Environment Canada',u'EC',u'Environnement Canada',u'EC',u'99'],
+    'Environment and Climate Change Canada'                     : [u'Environment Canada',u'EC',u'Environnement Canada',u'EC',u'99'],
+    'Environnement et Changement climatique Canada'             : [u'Environment Canada',u'EC',u'Environnement Canada',u'EC',u'99'],
+    # 'Environment and Climate Change Canada'                   : [u'Environment and Climate Change Canada',u'ECCC',u'Environnement et Changement climatique Canada',u'ECCC',u'99'],
+    # 'Environnement et Changement climatique Canada'           : [u'Environment and Climate Change Canada',u'ECCC',u'Environnement et Changement climatique Canada',u'ECCC',u'99'],
 
-    'Foreign Affairs and International Trade Canada'          : [u'Foreign Affairs and International Trade Canada',u'DFAIT',u'Affaires étrangères et Commerce international Canada',u'MAECI',u'64'],
-    'Affaires étrangères et Commerce international Canada'    : [u'Foreign Affairs and International Trade Canada',u'DFAIT',u'Affaires étrangères et Commerce international Canada',u'MAECI',u'64'],
-    'Affaires mondiales Canada'                               : [u'Foreign Affairs and International Trade Canada',u'DFAIT',u'Affaires étrangères et Commerce international Canada',u'MAECI',u'64'],
-    'Global Affairs Canada'                                   : [u'Foreign Affairs and International Trade Canada',u'DFAIT',u'Affaires étrangères et Commerce international Canada',u'MAECI',u'64'],
-    # 'Affaires mondiales Canada'                             : [u'Global Affairs Canada',u'GAC',u'Affaires mondiales Canada',u'AMC',u'64'],
-    # 'Global Affairs Canada'                                 : [u'Global Affairs Canada',u'GAC',u'Affaires mondiales Canada',u'AMC',u'64'],
+    'Foreign Affairs and International Trade Canada'            : [u'Foreign Affairs and International Trade Canada',u'DFAIT',u'Affaires étrangères et Commerce international Canada',u'MAECI',u'64'],
+    'Affaires étrangères et Commerce international Canada'      : [u'Foreign Affairs and International Trade Canada',u'DFAIT',u'Affaires étrangères et Commerce international Canada',u'MAECI',u'64'],
+    'Affaires mondiales Canada'                                 : [u'Foreign Affairs and International Trade Canada',u'DFAIT',u'Affaires étrangères et Commerce international Canada',u'MAECI',u'64'],
+    'Global Affairs Canada'                                     : [u'Foreign Affairs and International Trade Canada',u'DFAIT',u'Affaires étrangères et Commerce international Canada',u'MAECI',u'64'],
+    # 'Affaires mondiales Canada'                               : [u'Global Affairs Canada',u'GAC',u'Affaires mondiales Canada',u'AMC',u'64'],
+    # 'Global Affairs Canada'                                   : [u'Global Affairs Canada',u'GAC',u'Affaires mondiales Canada',u'AMC',u'64'],
 
-    'Travaux publics et Services gouvernementaux Canada'      : [u'Public Works and Government Services Canada',u'PWGSC',u'Travaux publics et Services gouvernementaux Canada',u'TPSGC',u'81'],
-    'Public Works and Government Services Canada'             : [u'Public Works and Government Services Canada',u'PWGSC',u'Travaux publics et Services gouvernementaux Canada',u'TPSGC',u'81'],
-    'Public Services and Procurement Canada'                  : [u'Public Works and Government Services Canada',u'PWGSC',u'Travaux publics et Services gouvernementaux Canada',u'TPSGC',u'81'],
-    'Services publics et Approvisionnement Canada'            : [u'Public Works and Government Services Canada',u'PWGSC',u'Travaux publics et Services gouvernementaux Canada',u'TPSGC',u'81'],
-    # 'Public Services and Procurement Canada'                : [u'Public Services and Procurement Canada',u'PSPC',u'Services publics et Approvisionnement Canada',u'SPAC',u'81'],
-    # 'Services publics et Approvisionnement Canada'          : [u'Public Services and Procurement Canada',u'PSPC',u'Services publics et Approvisionnement Canada',u'SPAC',u'81'],
+    'Travaux publics et Services gouvernementaux Canada'        : [u'Public Works and Government Services Canada',u'PWGSC',u'Travaux publics et Services gouvernementaux Canada',u'TPSGC',u'81'],
+    'Public Works and Government Services Canada'               : [u'Public Works and Government Services Canada',u'PWGSC',u'Travaux publics et Services gouvernementaux Canada',u'TPSGC',u'81'],
+    'Public Services and Procurement Canada'                    : [u'Public Works and Government Services Canada',u'PWGSC',u'Travaux publics et Services gouvernementaux Canada',u'TPSGC',u'81'],
+    'Services publics et Approvisionnement Canada'              : [u'Public Works and Government Services Canada',u'PWGSC',u'Travaux publics et Services gouvernementaux Canada',u'TPSGC',u'81'],
+    # 'Public Services and Procurement Canada'                  : [u'Public Services and Procurement Canada',u'PSPC',u'Services publics et Approvisionnement Canada',u'SPAC',u'81'],
+    # 'Services publics et Approvisionnement Canada'            : [u'Public Services and Procurement Canada',u'PSPC',u'Services publics et Approvisionnement Canada',u'SPAC',u'81'],
 
-    'Industry Canada'                                         : [u'Industry Canada',u'IC',u'Industrie Canada',u'IC',u'230'],
-    'Industrie Canada'                                        : [u'Industry Canada',u'IC',u'Industrie Canada',u'IC',u'230'],
-    'Innovation, Science and Economic Development Canada'     : [u'Industry Canada',u'IC',u'Industrie Canada',u'IC',u'230'],
-    'Innovation, Sciences et Développement économique Canada' : [u'Industry Canada',u'IC',u'Industrie Canada',u'IC',u'230'],
-    # 'Innovation                                             , Science and Economic Development Canada'                                                                                                                                                    : [u'Innovation, Science and Economic Development Canada',u'ISED',u'Innovation, Sciences et Développement économique Canada',u'ISDE',u'230'],
-    # 'Innovation                                             , Sciences et Développement économique Canada'                                                                                                                                                    : [u'Innovation, Science and Economic Development Canada',u'ISED',u'Innovation, Sciences et Développement économique Canada',u'ISDE',u'230'],
+    'Industry Canada'                                           : [u'Industry Canada',u'IC',u'Industrie Canada',u'IC',u'230'],
+    'Industrie Canada'                                          : [u'Industry Canada',u'IC',u'Industrie Canada',u'IC',u'230'],
+    'Innovation, Science and Economic Development Canada'       : [u'Industry Canada',u'IC',u'Industrie Canada',u'IC',u'230'],
+    'Innovation, Sciences et Développement économique Canada'   : [u'Industry Canada',u'IC',u'Industrie Canada',u'IC',u'230'],
+    # 'Innovation                                               , Science and Economic Development Canada'                                                                                                                                                    : [u'Innovation, Science and Economic Development Canada',u'ISED',u'Innovation, Sciences et Développement économique Canada',u'ISDE',u'230'],
+    # 'Innovation                                               , Sciences et Développement économique Canada'                                                                                                                                                    : [u'Innovation, Science and Economic Development Canada',u'ISED',u'Innovation, Sciences et Développement économique Canada',u'ISDE',u'230'],
 
-    'Citizenship and Immigration Canada'                      : [u'Citizenship and Immigration Canada',u'CIC',u'Citoyenneté et Immigration Canada',u'CIC',u'94'],
-    'Citoyenneté et Immigration Canada'                       : [u'Citizenship and Immigration Canada',u'CIC',u'Citoyenneté et Immigration Canada',u'CIC',u'94'],
-    'Immigration, Refugees and Citizenship Canada'            : [u'Citizenship and Immigration Canada',u'CIC',u'Citoyenneté et Immigration Canada',u'CIC',u'94'],
-    'Immigration, Réfugiés et Citoyenneté Canada'             : [u'Citizenship and Immigration Canada',u'CIC',u'Citoyenneté et Immigration Canada',u'CIC',u'94'],
-    # 'Immigration                                            , Refugees and Citizenship Canada'                                                                                                                  : [u'Immigration, Refugees and Citizenship Canada',u'IRCC',u'Immigration, Réfugiés et Citoyenneté Canada',u'IRCC',u'94'],
-    # 'Immigration                                            , Réfugiés et Citoyenneté Canada'                                                                                                                                                   : [u'Immigration, Refugees and Citizenship Canada',u'IRCC',u'Immigration, Réfugiés et Citoyenneté Canada',u'IRCC',u'94'],
+    'Citizenship and Immigration Canada'                        : [u'Citizenship and Immigration Canada',u'CIC',u'Citoyenneté et Immigration Canada',u'CIC',u'94'],
+    'Citoyenneté et Immigration Canada'                         : [u'Citizenship and Immigration Canada',u'CIC',u'Citoyenneté et Immigration Canada',u'CIC',u'94'],
+    'Immigration, Refugees and Citizenship Canada'              : [u'Citizenship and Immigration Canada',u'CIC',u'Citoyenneté et Immigration Canada',u'CIC',u'94'],
+    'Immigration, Réfugiés et Citoyenneté Canada'               : [u'Citizenship and Immigration Canada',u'CIC',u'Citoyenneté et Immigration Canada',u'CIC',u'94'],
+    # 'Immigration                                              , Refugees and Citizenship Canada'                                                                                                                  : [u'Immigration, Refugees and Citizenship Canada',u'IRCC',u'Immigration, Réfugiés et Citoyenneté Canada',u'IRCC',u'94'],
+    # 'Immigration                                              , Réfugiés et Citoyenneté Canada'                                                                                                                                                   : [u'Immigration, Refugees and Citizenship Canada',u'IRCC',u'Immigration, Réfugiés et Citoyenneté Canada',u'IRCC',u'94'],
 
 
     'Administration de pilotage de l\'Atlantique Canada'                                                                                                            : [u'Atlantic Pilotage Authority Canada',u'APA',u'Administration de pilotage de l\'Atlantique Canada',u'APA',u'221'],
@@ -2142,7 +2159,7 @@ GC_Registry_of_Applied_Terms = {
     'Commission de l\'immigration et du statut de réfugié du Canada'                                                                                                : [u'Immigration and Refugee Board of Canada',u'IRB',u'Commission de l\'immigration et du statut de réfugié du Canada',u'CISR',u'5'],
     'Commission du droit d\'auteur Canada'                                                                                                                          : [u'Copyright Board Canada',u'CB',u'Commission du droit d\'auteur Canada',u'CDA',u'116'],
     'Conseil d\'examen du prix des médicaments brevetés Canada'                                                                                                     : [u'Patented Medicine Prices Review Board Canada',u'',u'Conseil d\'examen du prix des médicaments brevetés Canada',u'',u'15'],
-    'Diversification de l\'économie de l\'Ouest Canada'                                                                                                              : [u'Western Economic Diversification Canada',u'WD',u'Diversification de l\'économie de l\'Ouest Canada',u'DEO',u'55'],
+    'Diversification de l\'économie de l\'Ouest Canada'                                                                                                             : [u'Western Economic Diversification Canada',u'WD',u'Diversification de l\'économie de l\'Ouest Canada',u'DEO',u'55'],
     'L\'Enquêteur correctionnel Canada'                                                                                                                             : [u'The Correctional Investigator Canada',u'OCI',u'L\'Enquêteur correctionnel Canada',u'BEC',u'5555'],
     'Musée canadien de l\'histoire'                                                                                                                                 : [u'Canadian Museum of History',u'CMH',u'Musée canadien de l\'histoire',u'MCH',u'263'],
     'Musée canadien de l\'immigration du Quai 21'                                                                                                                   : [u'Canadian Museum of Immigration at Pier 21',u'CMIP',u'Musée canadien de l\'immigration du Quai 21',u'MCIQ',u'2'],
@@ -2155,13 +2172,13 @@ GC_Registry_of_Applied_Terms = {
     'Société d\'expansion du Cap-Breton'                                                                                                                            : [u'Enterprise Cape Breton Corporation',u'',u'Société d\'expansion du Cap-Breton',u'',u'203'],
     'Tribunal d\'appel des transports du Canada'                                                                                                                    : [u'Transportation Appeal Tribunal of Canada',u'TATC',u'Tribunal d\'appel des transports du Canada',u'TATC',u'96'],
     'Énergie atomique du Canada'                                                                                                                                    : [u'Limitée',u'Atomic Energy of Canada Limited',u'',u'Énergie atomique du Canada',u'Limitée',u'',u'138'],
-    'Administration canadienne de la sûreté du transport aérien'                                                                                                     : [u'Canadian Air Transport Security Authority',u'CATSA',u'Administration canadienne de la sûreté du transport aérien',u'ACSTA',u'250'],
-    'Administration de pilotage des Grands Lacs Canada'                                                                                                              : [u'Great Lakes Pilotage Authority Canada',u'GLPA',u'Administration de pilotage des Grands Lacs Canada',u'APGL',u'261'],
-    'Administration de pilotage des Laurentides Canada'                                                                                                              : [u'Laurentian Pilotage Authority Canada',u'LPA',u'Administration de pilotage des Laurentides Canada',u'APL',u'213'],
-    'Administration de pilotage du Pacifique Canada'                                                                                                                 : [u'Pacific Pilotage Authority Canada',u'PPA',u'Administration de pilotage du Pacifique Canada',u'APP',u'165'],
-    'Administration du pipe-line du Nord Canada'                                                                                                                     : [u'Northern Pipeline Agency Canada',u'NPA',u'Administration du pipe-line du Nord Canada',u'APN',u'10'],
-    'Administrative Tribunals Support Service of Canada'                                                                                                             : [u'Administrative Tribunals Support Service of Canada',u'ATSSC',u'Service canadien d\'appui aux tribunaux administratifs',u'SCDATA',u'8888888'],
-    'Agence canadienne de développement économique du Nord'                                                                                                          : [u'Canadian Northern Economic Development Agency',u'CanNor',u'Agence canadienne de développement économique du Nord',u'CanNor',u'4'],
+    'Administration canadienne de la sûreté du transport aérien'                                                                                                    : [u'Canadian Air Transport Security Authority',u'CATSA',u'Administration canadienne de la sûreté du transport aérien',u'ACSTA',u'250'],
+    'Administration de pilotage des Grands Lacs Canada'                                                                                                             : [u'Great Lakes Pilotage Authority Canada',u'GLPA',u'Administration de pilotage des Grands Lacs Canada',u'APGL',u'261'],
+    'Administration de pilotage des Laurentides Canada'                                                                                                             : [u'Laurentian Pilotage Authority Canada',u'LPA',u'Administration de pilotage des Laurentides Canada',u'APL',u'213'],
+    'Administration de pilotage du Pacifique Canada'                                                                                                                : [u'Pacific Pilotage Authority Canada',u'PPA',u'Administration de pilotage du Pacifique Canada',u'APP',u'165'],
+    'Administration du pipe-line du Nord Canada'                                                                                                                    : [u'Northern Pipeline Agency Canada',u'NPA',u'Administration du pipe-line du Nord Canada',u'APN',u'10'],
+    'Administrative Tribunals Support Service of Canada'                                                                                                            : [u'Administrative Tribunals Support Service of Canada',u'ATSSC',u'Service canadien d\'appui aux tribunaux administratifs',u'SCDATA',u'8888888'],
+    'Agence canadienne de développement économique du Nord'                                                                                                         : [u'Canadian Northern Economic Development Agency',u'CanNor',u'Agence canadienne de développement économique du Nord',u'CanNor',u'4'],
     'Agence de développement économique du Canada pour les régions du Québec'                                                                                        : [u'Economic Development Agency of Canada for the Regions of Quebec',u'CED',u'Agence de développement économique du Canada pour les régions du Québec',u'DEC',u'93'],
     'Agence de la consommation en matière financière du Canada'                                                                                                      : [u'Financial Consumer Agency of Canada',u'FCAC',u'Agence de la consommation en matière financière du Canada',u'ACFC',u'224'],
     'Agence de la santé publique du Canada'                                                                                                                          : [u'Public Health Agency of Canada',u'PHAC',u'Agence de la santé publique du Canada',u'ASPC',u'135'],
