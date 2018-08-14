@@ -684,6 +684,10 @@ def main():
             json_record[schema_ref["32"]['CKAN API property']] = {}
             value = fetch_FGP_value(record, HNAP_fileIdentifier, schema_ref["32"])
             if value:
+
+                # format line breaks
+                value = value.replace('\n', '  \n  \n  ')
+
                 json_record[
                     schema_ref["32"]['CKAN API property']
                 ][CKAN_primary_lang] = value
@@ -694,6 +698,10 @@ def main():
 
             value = fetch_FGP_value(record, HNAP_fileIdentifier, schema_ref["33"])
             if value:
+
+                # format line breaks
+                value = value.replace('\n', '  \n  \n  ')
+
                 json_record[
                     schema_ref["32"]['CKAN API property']
                 ][CKAN_secondary_lang] = value

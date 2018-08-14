@@ -112,12 +112,12 @@ def main():
     #   'http://csw_user:csw_pass@csw_url/geonetwork/srv/csw')
     if csw_user and csw_passwd:
         csw = CatalogueServiceWeb(
-            'http://'+csw_url,
+            'https://'+csw_url,
             username=csw_user,
             password=csw_passwd,
             timeout=20)
     else:
-        csw = CatalogueServiceWeb('http://'+csw_url, timeout=20)
+        csw = CatalogueServiceWeb('https://'+csw_url, timeout=20)
 
     request_template = """<?xml version="1.0"?>
 <csw:GetRecords
