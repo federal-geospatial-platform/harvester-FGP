@@ -141,7 +141,6 @@ mappable_protocols = [
 
 iso_time = time.strftime("%Y-%m-%dT%H:%M:%S", time.gmtime())
 
-
 def main():
     output_jl = "harvested_records.jl"
     output_err = "harvested_record_errors.csv"
@@ -154,10 +153,12 @@ def main():
 
     json_records = []
     for input_block in input_data_blocks:
+        if not input_block:
+            continue
 
         # Read the file, should be a streamed input in the future
         root = etree.XML(input_block)
-        # Parse the root and itterate over each record
+        # Parse the root and iterate over each record
         records = fetchXMLArray(root, records_root)
 
         for record in records:

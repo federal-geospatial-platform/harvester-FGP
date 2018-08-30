@@ -109,7 +109,7 @@ def main():
 
     # Fetch the data
     # csw = CatalogueServiceWeb(
-    #   'http://csw_user:csw_pass@csw_url/geonetwork/srv/csw')
+    #   'https://csw_user:csw_pass@csw_url/geonetwork/srv/csw')
     if csw_user and csw_passwd:
         csw = CatalogueServiceWeb(
             'https://'+csw_url,
@@ -263,57 +263,3 @@ if __name__ == "__main__":
     #options, arguments = docopt(__doc__)  # parse arguments based on docstring above
     arguments = docopt.docopt(__doc__)
     sys.exit(main())
-
-# #### END
-
-# #### Storage
-# FGP supplied filters ( Apply "since X" when possible )
-# <csw:GetRecords
-#   xmlns:csw="http://www.opengis.net/cat/csw/2.0.2"
-#   service="CSW" version="2.0.2"
-#   resultType="results"
-#   outputSchema="csw:IsoRecord">
-# 	<csw:Query
-#       xmlns:gmd="http://www.isotc211.org/2005/gmd"
-#       typeNames="gmd:MD_Metadata">
-# 		<csw:Constraint version="1.1.0">
-# 			<Filter
-#               xmlns="http://www.opengis.net/ogc"
-#               xmlns:gml="http://www.opengis.net/gml">
-# 				<PropertyIsGreaterThanOrEqualTo>
-# 					<PropertyName>Modified</PropertyName>
-# 					<Literal>2015-04-04</Literal>
-# 				</PropertyIsGreaterThanOrEqualTo>
-# 			</Filter>
-# 		</csw:Constraint>
-# 	</csw:Query>
-# </csw:GetRecords>
-#
-# <?xml version="1.0"?>
-# <csw:GetRecords
-#   xmlns:csw="http://www.opengis.net/cat/csw/2.0.2"
-#   service="CSW"
-#   version="2.0.2"
-#   resultType="results"
-#   outputSchema="csw:IsoRecord">
-#   <csw:Query
-#       typeNames="gmd:MD_Metadata">
-#       <csw:Constraint
-#           version="1.1.0">
-#                <Filter
-#                   xmlns="http://www.opengis.net/ogc"
-#                   xmlns:gml="http://www.opengis.net/gml">
-#                <And>
-#                   <PropertyIsGreaterThanOrEqualTo>
-#                   <PropertyName>Modified</PropertyName>
-#                       <Literal>2015-04-04</Literal>
-#                   </PropertyIsGreaterThanOrEqualTo>
-#                   <PropertyIsLessThanOrEqualTo>
-#                   <PropertyName>Modified</PropertyName>
-#                       <Literal>2015-04-07T23:59:59</Literal>
-#                   </PropertyIsLessThanOrEqualTo>
-#                </And>
-#                </Filter>
-#        </csw:Constraint>
-#    </csw:Query>
-# </csw:GetRecords>
