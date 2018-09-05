@@ -1621,6 +1621,8 @@ def main():
                             
                             # check to see if the URL is HTTPS
                             value = fetch_FGP_value(resource, HNAP_fileIdentifier, schema_ref["74"])
+                            # if value[:value.find(":")] == 'http':
+                                # print "No HTTPS: " + HNAP_fileIdentifier
                             if value:
                                 can_be_used_in_RAMP = value[:value.find(":")] == 'https'
 
@@ -2923,6 +2925,7 @@ CL_Formats = [
     'TXT',
     'VPF',
     'WAV',
+    'WCS',
     'WFS',
     'WMS',
     'WMTS',
