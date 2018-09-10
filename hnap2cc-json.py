@@ -2834,18 +2834,22 @@ ResourceType = {
 #    'web_service'
 #]
 
+# These should be synced with http://www.gcpedia.gc.ca/wiki/Federal_Geospatial_Platform/Policies_and_Standards/Catalogue/Release/Appendix_B_Guidelines_and_Best_Practices/Guide_to_Harmonized_ISO_19115:2003_NAP/Format
 CL_Formats = [
     'AAC',
     'AIFF',
-    'APK',
+    'Android'
+    'APK', #deprecated
     'ASCII Grid',
     'AVI',
+    'Blackberry',
     'BMP',
     'BWF',
     'CCT',
     'CDED ASCII',
+    'CDF',
     'CDR',
-    'COD',
+    'COD', #deprecated
     'CSV',
     'DBD',
     'DBF',
@@ -2856,20 +2860,22 @@ CL_Formats = [
     'DXF',
     'E00',
     'ECW',
-    'EDI',
+    'EDI', #deprecated
     'EMF',
-    'EPUB3',
-    'EPUB2',
     'EPS',
+    'EPUB2',
+    'EPUB3',
     'ESRI REST',
     'EXE',
     'FGDB/GDB',
     'Flat raster binary',
+    'GeoJSON',
+    'GEOJSON', #deprecated
+    'GeoPackage',
     'GeoPDF',
     'GeoRSS',
     'GeoTIF',
-    'GEOJSON',
-    'GPKG',
+    'GPKG', #deprecated
     'GIF',
     'GML',
     'GRIB1',
@@ -2877,24 +2883,31 @@ CL_Formats = [
     'HDF',
     'HTML',
     'IATI',
-    'IPA',
+    'IOS',
+    'IPA', #deprecated
+    'JAR',
     'JFIF',
     'JP2',
+    'JPEG 2000',
+    'JPEG',
     'JPG',
     'JSON',
-    'JSONL',
+    'JSONL', #deprecated
+    'JSON Lines',
+    'JSON-LD',
     'KML',
     'KMZ',
     'LAS',
     'LYR',
+    'MapInfo',
     'MFX',
     'MOV',
+    'MP3',
     'MPEG',
     'MPEG-1',
-    'MP3',
     'MXD',
     'NetCDF',
-    'NT',
+    'NT', #deprecated
     'ODP',
     'ODS',
     'ODT',
@@ -2913,26 +2926,28 @@ CL_Formats = [
     'SEGY',
     'SHP',
     'SQL',
-    'SQLITE3',
+    'SQLITE3', #deprecated
     'SQLITE',
     'SVG',
     'TAB',
-    'TFW',
+    'TFW', #deprecated
     'TIFF',
-    'TRIG',
-    'TRIX',
-    'TTL',
+    'TRiG',
+    'TRiX',
+    'TTL', #deprecated
     'TXT',
     'VPF',
     'WAV',
+    'Web App',
     'WCS',
     'WFS',
     'WMS',
     'WMTS',
     'WMV',
-    'XML',
+    'WPS',
     'XLS',
     'XLSM',
+    'XML',
     'ZIP'
 ]
 
