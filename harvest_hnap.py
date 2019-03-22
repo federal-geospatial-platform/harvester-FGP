@@ -117,7 +117,7 @@ def main():
             password=csw_passwd,
             timeout=20)
     else:
-        csw = CatalogueServiceWeb('https://'+csw_url, timeout=20)
+        csw = CatalogueServiceWeb('https://'+csw_url, timeout=20, skip_caps=True)
 
     request_template = """<?xml version="1.0"?>
 <csw:GetRecords

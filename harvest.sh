@@ -39,8 +39,16 @@ echo $OGS_HARVEST_LAST_RUN
 # AND THEN the virtual environment
 # . /var/www/html/venv/staging-portal/bin/activate
 
+# Remove the previously harvested records
+if [ -e "harvested_records.xml" ]; then
+    rm harvested_records.xml
+fi
+
+if [ -e "harvested_records.jl" ]; then
+    rm harvested_records.jl
+fi
+
 # Collect the latest data
-# /home/odatsrv/_harvester_OpenMaps/harvest_hnap.py -f $OGS_HARVEST_LAST_RUN > harvested_records.xml
 ./harvest_hnap.py -f $OGS_HARVEST_LAST_RUN > harvested_records.xml & pid=$!
 
 # Show progress as this can take several minutes
@@ -67,17 +75,22 @@ if [ $myfilesize = 0 ]; then
     echo "No new/updated records since last harvest, skipping load into CKAN"
 else
     echo "Found new/updated records, loading into CKAN..."
-    # cd /var/www/html/open_gov/staging-portal/ckan
-    # ckanapi load datasets -I ~/_harvester_OpenMaps/harvested_records.jl -c production.ini
 
     # STAGING
     # ckanapi load datasets -I harvested_records.jl -r https://staging.open.canada.ca/data -a CKAN_API_KEY && date +"%Y-%m-%dT%H:%M:%SZ" > run.last
 
     # PRODUCTION
     # ckanapi load datasets -I harvested_records.jl -r https://open.canada.ca/data -a CKAN_API_KEY && date +"%Y-%m-%dT%H:%M:%SZ" > run.last
-
+    
     # LOCAL TESTING
-    # to test: ckanapi load datasets -I test_upload.jl -r https://staging.open.canada.ca/data -a CKAN_API_KEY
+    # ckanapi load datasets -I harvested_records.jl -r https://staging.open.canada.ca/data -a CKAN_API_KEY
+
+    # Verify which organizations a user is a member of :
+    # ckanapi action organization_list_for_user -a CKAN_API_KEY -r https://open.canada.ca/data
+
+    # Delete record from CKAN
+    # ckanapi action package_delete id=UUID_OF_RECORD -r https://open.canada.ca/data -a CKAN_API_KEY
+
 fi
 
 rm run.lock
